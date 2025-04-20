@@ -190,7 +190,7 @@ def send_job_notification(job_id, channel_id):
         logger.error(f"Unexpected error in send_job_notification task: {str(e)}", exc_info=True)
 
 
-@db_periodic_task(crontab(minute='*/5'))
+@db_periodic_task(crontab(minute='*/30'))
 def schedule_job_searches():
     """
     Periodic task that runs every 5 minutes to check for job searches that need to be run

@@ -57,7 +57,7 @@ class Command(BaseCommand):
                     search_keywords='python django',
                     notification_channel=channel,
                     is_active=True,
-                    schedule_type=JobFrequency.EVERY_5_MINUTES,
+                    schedule_type=JobFrequency.EVERY_30_MINUTES,
                     next_run=timezone.now()
                 )
 
