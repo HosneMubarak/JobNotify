@@ -59,6 +59,12 @@ This Django project is designed to automate job search queries, such as fetching
    python manage.py createsuperuser
    ```
 
+7. Before deploying to production or when serving static files, run:
+
+   ```bash
+   python manage.py collectstatic
+   ```
+
 ---
 
 ## Running the Project
