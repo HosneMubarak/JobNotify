@@ -10,7 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import os
+from datetime import timedelta
+from django.utils import timezone
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,12 +22,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-(xa7p^61ku_3@1!e4v!w&@ue*zb*!1nncacy!#lxoo7jby!u6@'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
 
 # Application definition
 
@@ -106,7 +109,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Dhaka'
 
 USE_I18N = True
 
@@ -148,5 +151,70 @@ HUEY = {
         'workers': 2,  # Number of worker processes
         'worker_type': 'thread',  # Use threads instead of processes
         'periodic': True,  # Enable periodic tasks
+    },
+}
+
+# Define the path for the logs directory
+log_dir = os.path.join(BASE_DIR, 'logs')
+
+# Check if the logs directory exists, if not, create it
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
+
+# Now you can safely configure the logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        # Main log file handler for Django
+        'django_file': {
+            'level': 'DEBUG',  # Log level (DEBUG, INFO, etc.)
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': os.path.join(log_dir, 'django.log'),  # Log file path
+            'when': 'midnight',  # Rotate at midnight
+            'backupCount': 180,  # Keep logs for 180 days (~6 months)
+            'encoding': 'utf-8',
+            'atTime': timezone.datetime.now(timezone.get_current_timezone()).replace(hour=0, minute=0, second=0, microsecond=0),
+        },
+        # Task-specific log file handler
+        'task_file': {
+            'level': 'DEBUG',  # Log level (DEBUG, INFO, etc.)
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': os.path.join(log_dir, 'tasks.log'),  # Log file path
+            'when': 'midnight',  # Rotate at midnight
+            'backupCount': 90,  # Keep logs for 90 days (~3 months)
+            'encoding': 'utf-8',
+            'atTime': timezone.datetime.now(timezone.get_current_timezone()).replace(hour=0, minute=0, second=0, microsecond=0),
+        },
+        # Scraper-specific log file handler
+        'scraper_file': {
+            'level': 'DEBUG',  # Log level (DEBUG, INFO, etc.)
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': os.path.join(log_dir, 'scraper.log'),  # Log file path
+            'when': 'midnight',  # Rotate at midnight
+            'backupCount': 90,  # Keep logs for 90 days (~3 months)
+            'encoding': 'utf-8',
+            'atTime': timezone.datetime.now(timezone.get_current_timezone()).replace(hour=0, minute=0, second=0, microsecond=0),
+        },
+    },
+    'loggers': {
+        # Main logger for Django application
+        'django': {
+            'handlers': ['django_file'],
+            'level': 'DEBUG',  # Log level (DEBUG, INFO, WARNING, etc.)
+            'propagate': True,
+        },
+        # Logger for tasks
+        'jobs.tasks': {
+            'handlers': ['task_file'],
+            'level': 'DEBUG',  # Log level (DEBUG, INFO, etc.)
+            'propagate': False,  # Don't propagate to root logger
+        },
+        # Logger for scraper
+        'jobs.scraper': {
+            'handlers': ['scraper_file'],
+            'level': 'DEBUG',  # Log level (DEBUG, INFO, etc.)
+            'propagate': False,  # Don't propagate to root logger
+        },
     },
 }
