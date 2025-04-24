@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'notifications',
     "import_export",  # for db export import
     "admin_extra_buttons",  # for adding extra button
+    "users",
 ]
 
 MIDDLEWARE = [

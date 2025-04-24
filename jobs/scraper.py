@@ -1,3 +1,5 @@
+import os
+import platform
 import apprise
 import html
 from selenium import webdriver
@@ -33,6 +35,14 @@ class UpworkScraper:
         chrome_options.add_argument(
             "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36")
         chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+
+        if platform.system() == "Linux":
+            # Add these lines for Linux servers, they won't affect Windows
+            chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("--disable-dev-shm-usage")
+
+            # Set binary location only for Linux
+            chrome_options.binary_location = "/usr/bin/google-chrome"
 
         return chrome_options
 
