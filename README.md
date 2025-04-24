@@ -29,6 +29,12 @@ This Django project is designed to automate job search queries, such as fetching
    git clone https://github.com/yourusername/yourproject.git
    cd yourproject
    ```
+   
+   ```bash
+   SECRET_KEY=your-secret-key
+   DEBUG=True
+   ALLOWED_HOSTS=your-domain.com
+   ```
 
 2. **Create a virtual environment**
 
