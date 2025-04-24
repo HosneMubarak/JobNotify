@@ -1,0 +1,32 @@
+<!-- templates/users/dashboard.html -->
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <h1>Welcome to Your Dashboard</h1>
+
+    <div class="user-info">
+        <h2>Your Profile</h2>
+        <div class="profile-card">
+            {% if user.socialaccount_set.all.0.get_avatar_url %}
+                <img src="{{ user.socialaccount_set.all.0.get_avatar_url }}" alt="Profile picture" class="avatar">
+            {% endif %}
+
+            <div class="user-details">
+                <p><strong>Email:</strong> {{ user.email }}</p>
+                {% if user.get_full_name %}
+                    <p><strong>Name:</strong> {{ user.get_full_name }}</p>
+                {% endif %}
+                <p><strong>Account Connected:</strong> Google</p>
+                <p><strong>Last Login:</strong> {{ user.last_login|date:"F j, Y, g:i a" }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="actions">
+        <a href="{% url 'users:logout' %}" class="logout-btn">Log Out</a>
+    </div>
+</div>
+{% endblock %}

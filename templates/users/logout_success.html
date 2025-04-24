@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Logged Out{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-box">
+        <h1>You've been logged out</h1>
+        <p class="auth-description">Your session has ended successfully.</p>
+        
+        <div class="auth-options">
+            <div class="social-login">
+                <a href="{% url 'users:login_signup' %}" class="google-btn">
+                    <span>Log in Again</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

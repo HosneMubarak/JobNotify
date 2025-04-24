@@ -18,7 +18,6 @@ from dotenv import load_dotenv
 # Load environment variables from the .env file
 load_dotenv()
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -48,6 +47,12 @@ INSTALLED_APPS = [
     "import_export",  # for db export import
     "admin_extra_buttons",  # for adding extra button
     "users",
+    # django-allauth required apps
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
 
 MIDDLEWARE = [
@@ -59,7 +64,53 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # Add the account middleware:
+    "allauth.account.middleware.AccountMiddleware",
+    'users.middleware.RedirectMiddleware'
 ]
+
+# Add authentication backends
+AUTHENTICATION_BACKENDS = [
+    # Django default
+    'django.contrib.auth.backends.ModelBackend',
+    # django-allauth
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+# Site ID (required for django-allauth)
+SITE_ID = 1
+
+# Django-allauth settings
+# AllAuth Settings
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_LOGOUT_ON_GET = True  # Simple logout with a GET request
+SOCIALACCOUNT_LOGIN_ON_GET = True  # Skip intermediate pages in OAuth flow
+SOCIALACCOUNT_AUTO_SIGNUP = True  # Auto-create user accounts
+
+# Use this if you want to skip the signup form when user has account created by social login
+SOCIALACCOUNT_FORMS = {'signup': 'allauth.socialaccount.forms.DisconnectForm'}
+
+# Only show Google as a login option
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
+
+# Login/logout URLs
+LOGIN_URL = '/users/login/'
+LOGIN_REDIRECT_URL = '/users/dashboard/'
+LOGOUT_REDIRECT_URL = '/users/login/'
 
 ROOT_URLCONF = 'JobNotify.urls'
 
@@ -179,7 +230,8 @@ LOGGING = {
             'when': 'midnight',  # Rotate at midnight
             'backupCount': 180,  # Keep logs for 180 days (~6 months)
             'encoding': 'utf-8',
-            'atTime': timezone.datetime.now(timezone.get_current_timezone()).replace(hour=0, minute=0, second=0, microsecond=0),
+            'atTime': timezone.datetime.now(timezone.get_current_timezone()).replace(hour=0, minute=0, second=0,
+                                                                                     microsecond=0),
         },
         # Task-specific log file handler
         'task_file': {
@@ -189,7 +241,8 @@ LOGGING = {
             'when': 'midnight',  # Rotate at midnight
             'backupCount': 90,  # Keep logs for 90 days (~3 months)
             'encoding': 'utf-8',
-            'atTime': timezone.datetime.now(timezone.get_current_timezone()).replace(hour=0, minute=0, second=0, microsecond=0),
+            'atTime': timezone.datetime.now(timezone.get_current_timezone()).replace(hour=0, minute=0, second=0,
+                                                                                     microsecond=0),
         },
         # Scraper-specific log file handler
         'scraper_file': {
@@ -199,7 +252,8 @@ LOGGING = {
             'when': 'midnight',  # Rotate at midnight
             'backupCount': 90,  # Keep logs for 90 days (~3 months)
             'encoding': 'utf-8',
-            'atTime': timezone.datetime.now(timezone.get_current_timezone()).replace(hour=0, minute=0, second=0, microsecond=0),
+            'atTime': timezone.datetime.now(timezone.get_current_timezone()).replace(hour=0, minute=0, second=0,
+                                                                                     microsecond=0),
         },
     },
     'loggers': {
